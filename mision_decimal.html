@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula Kids: Misión Decimal 🚀</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;600&display=swap');
+
+        :root {
+            --aula-blue: #008AC9;
+            --kids-green: #8DC63F;
+            --kids-green-dark: #6fa32d;
+            --bg-color: #f0f9ff;
+            --text-color: #37474f;
+            --warning: #ff9800;
+        }
+
+        body {
+            font-family: 'Fredoka', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: radial-gradient(#e1f5fe 10%, transparent 10%);
+            background-size: 30px 30px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 30px;
+            border-bottom: 8px solid #cfd8dc;
+            position: relative;
+            border-top: 5px solid var(--aula-blue);
+        }
+
+        .logo-container { margin-bottom: 10px; margin-top: 20px; }
+        .logo-img { max-width: 200px; height: auto; display: block; margin: 0 auto; }
+        .logo-text { font-size: 2.5em; margin: 0; line-height: 1; font-family: 'Fredoka', sans-serif; }
+        .text-aula { color: var(--aula-blue); font-weight: 600; }
+        .text-kids { color: var(--kids-green); font-weight: 600; }
+
+        h1 { color: var(--aula-blue); margin-top: 10px; font-size: 1.5em; opacity: 0.9; }
+        
+        .score-board {
+            display: flex;
+            justify-content: space-around;
+            background: #f1f8e9; 
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            font-weight: bold;
+            color: var(--kids-green-dark);
+            font-size: 1.2em;
+            border: 2px solid #dcedc8;
+        }
+
+        .mode-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        button.mode-btn {
+            background: var(--aula-blue);
+            border: none;
+            padding: 15px;
+            border-radius: 15px;
+            color: white;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Fredoka', sans-serif;
+            box-shadow: 0 4px 0 #006b9c;
+        }
+        button.mode-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        button.mode-btn:active { transform: translateY(2px); box-shadow: none; }
+        
+        .game-area, #loginArea {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 20px;
+            border: 3px dashed var(--aula-blue);
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        #loginArea { display: block; border-color: var(--kids-green); }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .question { font-size: 1.8em; margin: 20px 0; color: #455a64; }
+
+        .problem-text {
+            font-size: 0.85em; 
+            text-align: left; 
+            background: #e3f2fd; 
+            padding: 15px; 
+            border-radius: 10px;
+            line-height: 1.4;
+        }
+
+        input[type="number"], input[type="text"] {
+            font-size: 1.5em;
+            padding: 10px;
+            width: 200px;
+            border-radius: 12px;
+            border: 3px solid #b0bec5;
+            text-align: center;
+            font-family: 'Fredoka', sans-serif;
+            outline: none;
+            color: var(--aula-blue);
+        }
+        input:focus { border-color: var(--kids-green); }
+
+        .action-btn {
+            background: var(--kids-green);
+            color: white;
+            border: none;
+            padding: 12px 40px;
+            border-radius: 50px;
+            font-size: 1.3em;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 5px 0 var(--kids-green-dark);
+            font-family: 'Fredoka', sans-serif;
+            transition: all 0.1s;
+        }
+        .action-btn:active { transform: translateY(5px); box-shadow: none; }
+
+        .feedback {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 15px;
+            display: none;
+            text-align: left;
+            font-size: 1.1em;
+            line-height: 1.5;
+        }
+        .feedback.correct { background: #e8f5e9; color: #2e7d32; border: 2px solid #a5d6a7; }
+        .feedback.wrong { background: #ffebee; color: #c62828; border: 2px solid #ef9a9a; }
+
+        .mascot { 
+            font-size: 60px; 
+            position: absolute;
+            top: -45px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            border-radius: 50%;
+            padding: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: 4px solid var(--kids-green);
+            z-index: 10;
+        }
+
+        .back-btn { margin-top: 10px; background: transparent; border: none; color: #90a4ae; cursor: pointer; text-decoration: underline; }
+        .badge-book { background: #ff9800; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.5em; vertical-align: middle; margin-left: 10px; }
+
+        /* Estilos del Pie de Página de Contacto */
+        .app-footer {
+            margin-top: 40px;
+            padding-top: 15px;
+            border-top: 2px dashed #eceff1;
+            font-size: 0.9em;
+            color: #78909c;
+        }
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            justify-content: center;
+            align-items: center;
+        }
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        @media (min-width: 500px) {
+            .contact-info {
+                flex-direction: row;
+                gap: 20px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="mascot">👋</div>
+    
+    <div class="logo-container">
+        <img src="logoAulakids.png.jpg" alt="Aula Kids Logo" class="logo-img" onerror="this.style.display='none'; document.getElementById('fallback-logo').style.display='block';">
+        <div id="fallback-logo" class="logo-text" style="display:none;">
+            <span class="text-aula">Aula</span><span class="text-kids">Kids</span>
+        </div>
+    </div>
+
+    <h1>Misión Decimal</h1>
+    
+    <!-- PANTALLA DE INICIO / LOGIN -->
+    <div id="loginArea">
+        <p style="font-size: 1.3em;">¡Hola! ¿Cómo te llamas?</p>
+        <input type="text" id="playerName" placeholder="Tu nombre aquí" onkeyup="if(event.key==='Enter') startGame()">
+        <br>
+        <button class="action-btn" onclick="startGame()">¡Empezar a Jugar!</button>
+    </div>
+
+    <!-- PANTALLA DEL MENÚ -->
+    <div id="menuArea" style="display:none;">
+        <div class="score-board">
+            <span>👤 <span id="displayPlayerName">Jugador</span></span>
+            <span>🔥 Racha: <span id="streak">0</span></span>
+            <span>⭐ Puntos: <span id="score">0</span></span>
+        </div>
+        <p style="font-size: 1.2em;">Elige tu entrenamiento:</p>
+        <div class="mode-selector">
+            <button class="mode-btn" onclick="setMode('compare')">📏 Comparar</button>
+            <button class="mode-btn" onclick="setMode('round')">🔄 Redondear</button>
+            <button class="mode-btn" onclick="setMode('addsub')">➕ Suma/Resta</button>
+            <button class="mode-btn" onclick="setMode('mult')">✖️ Multiplicar</button>
+            <button class="mode-btn" onclick="setMode('div')">➗ División</button>
+            <button class="mode-btn" onclick="setMode('problem')">🧠 Problemas</button>
+        </div>
+    </div>
+
+    <!-- PANTALLA DE JUEGO -->
+    <div id="gameArea" class="game-area">
+        <h3 id="qType" style="margin-top:0; color:var(--aula-blue);">Pregunta</h3>
+        <div id="questionText" class="question">...</div>
+        
+        <input type="text" id="userAnswer" placeholder="Respuesta..." autocomplete="off">
+        <br>
+        
+        <button id="checkBtn" class="action-btn" onclick="checkAnswer()">¡Comprobar!</button>
+        <button id="nextBtn" class="action-btn" style="display:none; background:var(--aula-blue); box-shadow: 0 5px 0 #006b9c;" onclick="nextQuestion()">Siguiente ➡</button>
+        
+        <div id="feedback" class="feedback"></div>
+        <br>
+        <button class="back-btn" onclick="showMenu()">⬅ Volver al menú</button>
+    </div>
+
+    <!-- PIE DE PÁGINA CON CONTACTO -->
+    <div class="app-footer">
+        <div class="contact-info">
+            <div class="contact-item">📧 aulakids513@gmail.com</div>
+            <div class="contact-item">📞 602 02 61 19</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- DATOS DEL LIBRO + SIMULACRO + FICHA NUEVA ---
+    const bookExercises = {
+        compare: [
+            { q: "3.15 vs 3.146", a: 3.15, text: "A) 3.15<br>B) 3.146", exp: "Igualamos decimales: 3.150 vs 3.146. ¡Gana 3.150!" },
+            { q: "0.202 vs 0.3", a: 0.3, text: "A) 0.202<br>B) 0.3", exp: "Parece que gana el largo, pero... 0.3 = 0.300. ¡300 es mayor que 202!" },
+            { q: "30.47 vs 3.47", a: 30.47, text: "A) 30.47<br>B) 3.47", exp: "¡Mira primero la parte entera! 30 es mucho mayor que 3." },
+            { q: "150.5 vs 150.45", a: 150.5, text: "A) 150.5<br>B) 150.45", exp: "Añade un cero: 150.50 vs 150.45. ¡50 gana a 45!" },
+            { q: "25 vs 25.0", a: "IGUAL", alt: [25], text: "A) 25<br>B) 25.0<br>(Escribe el mayor o 'IGUAL')", exp: "El cero a la derecha en los decimales no cambia el valor." },
+            // Simulacro
+            { q: "0.508 vs 0.58", a: 0.58, text: "A) 0.508<br>B) 0.58", exp: "0.58 = 0.580. ¡580 es mayor que 508!" },
+            { q: "7.05 vs 7.050", a: "IGUAL", alt: [7.05, 7.050], text: "A) 7.05<br>B) 7.050", exp: "Añadir un cero al final no cambia el valor." },
+            { q: "12.4 vs 12.39", a: 12.4, text: "A) 12.4<br>B) 12.39", exp: "12.4 = 12.40. ¡40 gana a 39!" },
+            { q: "3.009 vs 3.09", a: 3.09, text: "A) 3.009<br>B) 3.09", exp: "3.09 = 3.090. ¡90 es mayor que 9!" },
+            // Nueva Ficha
+            { q: "5.65 vs 5.610", a: 5.65, text: "A) 5.65<br>B) 5.610", exp: "5.65 = 5.650. ¡650 es mayor que 610!" },
+            { q: "0.009 vs 0.4", a: 0.4, text: "A) 0.009<br>B) 0.4", exp: "0.4 = 0.400. ¡400 es mayor que 9!" },
+            { q: "15.1 vs 15.12", a: 15.12, text: "A) 15.1<br>B) 15.12", exp: "15.1 = 15.10. ¡12 gana a 10!" },
+            { q: "0.5 vs 0.2", a: 0.5, text: "A) 0.5<br>B) 0.2", exp: "5 décimas es mayor que 2 décimas." }
+        ],
+        round: [
+            { target: "unidad", n: 31.83, a: 32, exp: "Miramos la décima (8). Como es >= 5, sumamos 1 al 31." },
+            { target: "décima", n: 51.827, a: 51.8, exp: "Miramos la centésima (2). Es < 5, se queda igual." },
+            { target: "centésima", n: 59.296, a: 59.30, exp: "¡Cuidado con el 9! El 6 hace subir al 9 -> 10. Ponemos 0 y llevamos 1." },
+            { target: "unidad", n: 11.206, a: 11, exp: "La décima es 2 (menor que 5). Se queda en 11." },
+            { target: "unidad", n: 9.85, a: 10, exp: "La décima es 8. Sumamos 1 al 9 y da 10." },
+            // Simulacro
+            { target: "décima", n: 48.736, a: 48.7, exp: "La centésima es 3 (<5). Se queda en 48.7" },
+            { target: "centésima", n: 48.736, a: 48.74, exp: "La milésima es 6 (>=5). Subimos el 3 a 4." },
+            { target: "unidad", n: 48.736, a: 49, exp: "La décima es 7 (>=5). Subimos el 48 a 49." },
+            { target: "centésima", n: 13.995, a: 14.00, exp: "¡Efecto Dominó! El 5 sube al 9 -> 10. El otro 9 sube -> 10. ¡Sube la unidad!" },
+            { target: "centésima", n: 7.104, a: 7.10, exp: "La milésima es 4 (<5). Se queda en 7.10" },
+            // Nueva Ficha (Redondeo al entero más cercano)
+            { target: "unidad", n: 8.2, a: 8, exp: "La décima es 2 (<5). Se queda en 8." },
+            { target: "unidad", n: 9.7, a: 10, exp: "La décima es 7 (>=5). Sube a 10." },
+            { target: "unidad", n: 0.5, a: 1, exp: "La décima es 5 (>=5). Sube a 1." },
+            { target: "unidad", n: 15.3, a: 15, exp: "La décima es 3 (<5). Se queda en 15." }
+        ],
+        addsub: [
+            { op: "sum", n1: 271.438, n2: 86.9, a: 358.338, exp: "Alinea: 271.438 + 86.900" },
+            { op: "sum", n1: 12.7, n2: 8.471, n3: 125.46, a: 146.631, exp: "Suma de tres pisos. Rellena huecos con ceros." },
+            { op: "sub", n1: 97.5, n2: 21.275, a: 76.225, exp: "¡Pon dos ceros arriba! 97.500 - 21.275" },
+            { op: "sub", n1: 124.6, n2: 72.853, a: 51.747, exp: "Rellena: 124.600 - 72.853" },
+            { op: "sum", n1: 21.275, n2: 97.5, a: 118.775, exp: "Alineando comas sale perfecto." },
+            // Simulacro
+            { op: "sum", n1: 24.58, n2: 7.094, n3: 125.6, a: 157.274, exp: "Alinea las comas y suma con calma." },
+            { op: "sub", n1: 80.3, n2: 19.875, a: 60.425, exp: "Importante: 80.300 - 19.875" },
+            // Nueva Ficha
+            { op: "sum", n1: 7.65, n2: 13.45, a: 21.1, exp: "7.65 + 13.45 = 21.10 = 21.1" },
+            { op: "sum", n1: 753.38, n2: 567.75, a: 1321.13, exp: "¡Cuidado con las llevadas!" },
+            { op: "sub", n1: 94.34, n2: 89.25, a: 5.09, exp: "Resta con cuidado." },
+            { op: "sub", n1: 265.12, n2: 98.24, a: 166.88, exp: "Pide prestado si lo necesitas." }
+        ],
+        mult: [
+            { n1: 12.8, n2: 3.5, a: 44.8, exp: "128 x 35 = 4480. Dos decimales -> 44.80" },
+            { n1: 4.87, n2: 20.3, a: 98.861, exp: "Tres decimales en total en la respuesta." },
+            { n1: 0.128, n2: 3.5, a: 0.448, exp: "4 decimales en total. Mueve la coma 4 veces." },
+            { n1: 8.35, n2: 40.6, a: 339.01, exp: "Multiplica normal y cuenta 3 decimales." },
+            { n1: 35, n2: 0.128, a: 4.48, exp: "El orden no altera el producto." },
+            // Simulacro
+            { n1: 6.4, n2: 0.35, a: 2.24, exp: "64 x 35 = 2240. 3 decimales -> 2.240" },
+            { n1: 0.075, n2: 12.8, a: 0.96, exp: "75 x 128 = 9600. 4 decimales -> 0.9600" },
+            // Nueva Ficha
+            { n1: 34.22, n2: 1.2, a: 41.064, exp: "3422 x 12 = 41064. 3 decimales -> 41.064" },
+            { n1: 632.43, n2: 0.14, a: 88.5402, exp: "63243 x 14 = 885402. 4 decimales -> 88.5402" }
+        ],
+        div: [
+            { n1: 36.72, n2: 12, a: 3.06, exp: "División normal. Baja la coma al cociente cuando bajes el 7." },
+            { n1: 94.80, n2: 24, a: 3.95, exp: "Sigue dividiendo hasta resto cero." },
+            { n1: 65.70, n2: 1.46, a: 45, exp: "¡Quita la coma! Multiplica x100 -> 6570 : 146" },
+            { n1: 32.76, n2: 0.6, a: 54.6, exp: "Multiplica x10 -> 327.6 : 6" },
+            { n1: 13, n2: 4, a: 3.25, exp: "Saca decimales hasta que el resto sea 0." },
+            // Simulacro
+            { n1: 94.5, n2: 12, a: 7.875, alt: [7.88, 7.87], exp: "94.5 : 12 = 7.875 (Si te piden redondear a 2 decimales: 7.88)" },
+            // Nueva Ficha
+            { n1: 12.75, n2: 3.75, a: 3.4, exp: "Quita comas (x100): 1275 : 375 = 3.4" },
+            { n1: 3.2, n2: 0.05, a: 64, exp: "Quita comas (x100): 320 : 5 = 64" },
+            { n1: 6.39, n2: 0.9, a: 7.1, exp: "Quita comas (x100 o x10): 63.9 : 9 = 7.1" },
+            { n1: 4.5, n2: 0.75, a: 6, exp: "Quita comas (x100): 450 : 75 = 6" }
+        ],
+        problem: [
+            { text: "🥬 <strong>Espinacas (Del libro):</strong> 1 kg vale 1.14 €. ¿Cuánto cuestan 12.5 kg?", a: 14.25, exp: "Multiplicamos 1.14 x 12.5 = 14.250 -> 14.25 €" },
+            { text: "✈️ <strong>Millas (Del libro):</strong> 1 milla = 1.609 km. ¿Cuántos km son 750 millas?", a: 1206.75, exp: "1.609 x 750 = 1206.75 km" },
+            { text: "🎀 <strong>Lazos (Del libro):</strong> Tienes 150.5 m de cinta. Cada lazo usa 0.25 m. ¿Cuántos lazos?", a: 602, exp: "Dividimos: 150.5 : 0.25 -> 15050 : 25 = 602" },
+            { text: "🍬 <strong>Caramelos (Del libro):</strong> Un caramelo vale 0.15 €. ¿Cuánto valen 200?", a: 30, exp: "0.15 x 200 = 30.00 €" },
+            { text: "🧵 <strong>Tela (Del libro):</strong> 7.5 m cuestan 33.75 €. ¿Cuánto vale 1 metro?", a: 4.5, exp: "Repartir precio entre metros: 33.75 : 7.5 -> 337.5 : 75 = 4.5 €" },
+            // Simulacro
+            { text: "🥛 <strong>Leche (Simulacro):</strong> 1 litro vale 1.18 €. ¿Cuánto cuestan 2.5 L?", a: 2.95, exp: "1.18 x 2.5 = 2.95 €" },
+            { text: "🧃 <strong>Zumo (Simulacro):</strong> Tienes 3.6 L y botellas de 0.45 L. ¿Cuántas llenas?", a: 8, exp: "3.6 : 0.45 -> 360 : 45 = 8 botellas" }
+        ]
+    };
+
+    // --- VARIABLES DE ESTADO ---
+    let playerName = "";
+    let currentMode = '';
+    let bookIndex = { compare: 0, round: 0, addsub: 0, mult: 0, div: 0, problem: 0 };
+    let currentSolution = 0;
+    let currentAltAnswers = []; // Para respuestas alternativas (ej: 25 en vez de IGUAL)
+    let currentExplanation = '';
+    let streak = 0;
+    let score = 0;
+    let isBookExercise = false;
+
+    function startGame() {
+        let input = document.getElementById("playerName").value;
+        if(input.trim() === "") { alert("¡Pon tu nombre para empezar!"); return; }
+        playerName = input;
+        document.getElementById("displayPlayerName").innerText = playerName;
+        document.querySelector('.mascot').innerText = "👦🏽"; 
+        
+        document.getElementById("loginArea").style.display = "none";
+        document.getElementById("menuArea").style.display = "block";
+    }
+
+    function showMenu() {
+        document.getElementById('gameArea').style.display = 'none';
+        document.getElementById('menuArea').style.display = 'block';
+    }
+
+    function setMode(mode) {
+        currentMode = mode;
+        document.getElementById('menuArea').style.display = 'none';
+        document.getElementById('gameArea').style.display = 'block';
+        nextQuestion();
+    }
+
+    function nextQuestion() {
+        document.getElementById('feedback').style.display = 'none';
+        document.getElementById('nextBtn').style.display = 'none';
+        document.getElementById('checkBtn').style.display = 'inline-block';
+        let input = document.getElementById('userAnswer');
+        input.value = '';
+        input.disabled = false;
+        input.focus();
+        currentAltAnswers = []; // Reiniciar alternativas
+
+        // 1. COMPROBAR SI HAY EJERCICIOS DEL LIBRO PENDIENTES
+        if (bookIndex[currentMode] < bookExercises[currentMode].length) {
+            isBookExercise = true;
+            loadBookExercise();
+        } else {
+            isBookExercise = false;
+            // Generar ejercicio infinito
+            switch(currentMode) {
+                case 'compare': generateCompare(); break;
+                case 'round': generateRound(); break;
+                case 'addsub': generateAddSub(); break;
+                case 'mult': generateMult(); break;
+                case 'div': generateDiv(); break;
+                case 'problem': generateProblem(); break;
+            }
+        }
+    }
+
+    function loadBookExercise() {
+        let ex = bookExercises[currentMode][bookIndex[currentMode]];
+        
+        let title = document.getElementById('qType');
+        title.innerHTML = `📖 Ejercicio del Libro <span class="badge-book">${bookIndex[currentMode]+1}/${bookExercises[currentMode].length}</span>`;
+        
+        currentSolution = ex.a;
+        currentAltAnswers = ex.alt || []; // Cargar alternativas si existen
+        currentExplanation = ex.exp;
+
+        // Formatear según tipo
+        if (currentMode === 'compare') {
+            document.getElementById('questionText').innerHTML = ex.text;
+        } else if (currentMode === 'problem') {
+            document.getElementById('questionText').innerHTML = `<div class="problem-text">${ex.text}</div>`;
+        } else if (currentMode === 'round') {
+             document.getElementById('qType').innerHTML += `<br><span style='font-size:0.6em'>Redondea a la <strong>${ex.target.toUpperCase()}</strong></span>`;
+             document.getElementById('questionText').innerText = ex.n;
+        } else if (currentMode === 'addsub') {
+             let sign = ex.op === 'sum' ? '+' : '-';
+             let text = `${ex.n1} ${sign} ${ex.n2}`;
+             if(ex.n3) text += ` ${sign} ${ex.n3}`;
+             document.getElementById('questionText').innerText = text;
+        } else if (currentMode === 'mult') {
+             document.getElementById('questionText').innerText = `${ex.n1} × ${ex.n2}`;
+        } else if (currentMode === 'div') {
+             document.getElementById('questionText').innerText = `${ex.n1} ÷ ${ex.n2}`;
+        }
+    }
+
+    // --- GENERADORES INFINITOS ---
+    function getRandom(min, max, decimals = 0) {
+        let num = Math.random() * (max - min) + min;
+        return parseFloat(num.toFixed(decimals));
+    }
+
+    function generateCompare() {
+        document.getElementById('qType').innerText = "♾️ Comparación Infinita";
+        let trap = Math.random() > 0.5; 
+        let n1, n2;
+        if(trap) {
+            n1 = getRandom(0, 0.9, 1); 
+            n2 = getRandom(n1 - 0.1, n1 + 0.1, 2); 
+            if (n1 === n2) n2 = n2 + 0.01;
+        } else {
+            n1 = getRandom(1, 10, 3); n2 = getRandom(1, 10, 3);
+        }
+        document.getElementById('questionText').innerHTML = `<div style="display:flex; justify-content:center; gap:30px;"><span>A) ${n1}</span><span>B) ${n2}</span></div>`;
+        currentSolution = (n1 > n2) ? n1 : n2;
+        currentExplanation = `Iguala decimales y compara.`;
+    }
+    
+    function generateRound() {
+        document.getElementById('qType').innerText = "♾️ Redondeo Infinito";
+        let n1 = getRandom(10, 99, 3);
+        let target = Math.random() > 0.5 ? 'décima' : 'unidad';
+        if (target === 'décima') {
+            document.getElementById('qType').innerText += " (A la DÉCIMA)";
+            currentSolution = Math.round(n1 * 10) / 10;
+        } else {
+            document.getElementById('qType').innerText += " (A la UNIDAD)";
+            currentSolution = Math.round(n1);
+        }
+        document.getElementById('questionText').innerText = n1;
+        currentExplanation = "Aplica la regla del 5 mirando al vecino de la derecha.";
+    }
+
+    function generateAddSub() {
+        document.getElementById('qType').innerText = "♾️ Suma/Resta Infinita";
+        let isSum = Math.random() > 0.5;
+        let n1 = getRandom(10, 100, 2);
+        let n2 = getRandom(1, 50, 3);
+        if(isSum) {
+            document.getElementById('questionText').innerText = `${n1} + ${n2}`;
+            currentSolution = parseFloat((n1 + n2).toFixed(3));
+            currentExplanation = "Alinea las comas y rellena huecos.";
+        } else {
+            if(n2 > n1) { let temp = n1; n1 = n2; n2 = temp; }
+            document.getElementById('questionText').innerText = `${n1} - ${n2}`;
+            currentSolution = parseFloat((n1 - n2).toFixed(3));
+            currentExplanation = "¡Ojo con los ceros invisibles!";
+        }
+    }
+
+    function generateMult() {
+        document.getElementById('qType').innerText = "♾️ Multiplicación Infinita";
+        let n1 = getRandom(1, 15, 1);
+        let n2 = getRandom(1, 9, 1);
+        document.getElementById('questionText').innerText = `${n1} × ${n2}`;
+        currentSolution = parseFloat((n1 * n2).toFixed(4));
+        currentExplanation = "Cuenta los decimales totales.";
+    }
+
+    function generateDiv() {
+        document.getElementById('qType').innerText = "♾️ División Infinita";
+        let divisorBase = getRandom(2, 8, 0); 
+        let quotient = getRandom(2, 12, 1); 
+        let n2 = divisorBase / 10; 
+        let n1 = parseFloat((quotient * n2).toFixed(2)); 
+        document.getElementById('questionText').innerText = `${n1} ÷ ${n2}`;
+        currentSolution = quotient;
+        currentExplanation = "Quita la coma del divisor multiplicando x10.";
+    }
+
+    function generateProblem() {
+        document.getElementById('qType').innerText = "♾️ Problema Aleatorio";
+        let scenarios = [
+            { t: "Manzanas a {n1}€. Compras {n2}kg.", op: (a,b)=>a*b, type:"mult" },
+            { t: "Cinta de {n1}m. Cortas {n2}m.", op: (a,b)=>a-b, type:"sub" }
+        ];
+        let sc = scenarios[Math.floor(Math.random()*scenarios.length)];
+        let n1 = getRandom(2,10,2); let n2 = getRandom(1,5,1);
+        currentSolution = parseFloat(sc.op(n1,n2).toFixed(2));
+        document.getElementById('questionText').innerHTML = `<div class="problem-text">${sc.t.replace("{n1}",n1).replace("{n2}",n2)}</div>`;
+        currentExplanation = "Lee bien si tienes que juntar (x) o quitar (-).";
+    }
+
+    // --- VERIFICACIÓN ---
+    function checkAnswer() {
+        let userVal = document.getElementById('userAnswer').value.trim();
+        userVal = userVal.replace(',', '.');
+        
+        let isCorrect = false;
+
+        // Manejo especial para "IGUAL" y sus alternativos
+        if (currentSolution === "IGUAL") {
+            if (userVal.toUpperCase() === "IGUAL") {
+                isCorrect = true;
+            } else if (currentAltAnswers.length > 0) {
+                // Comprobar si escribieron el número (ej: 25)
+                let userNum = parseFloat(userVal);
+                if (!isNaN(userNum)) {
+                    // Tolerancia por si usan 25.0
+                    if (currentAltAnswers.some(ans => Math.abs(userNum - ans) < 0.001)) {
+                        isCorrect = true;
+                    }
+                }
+            }
+        } else {
+            let userNum = parseFloat(userVal);
+            if (!isNaN(userNum) && Math.abs(userNum - currentSolution) < 0.001) isCorrect = true;
+            // Comprobar alternativos (para redondeos o divisiones con varias interpretaciones)
+             if (!isCorrect && currentAltAnswers.length > 0) {
+                 if (currentAltAnswers.some(ans => Math.abs(userNum - ans) < 0.001)) {
+                        isCorrect = true;
+                    }
+             }
+        }
+
+        let feedback = document.getElementById('feedback');
+        
+        if (isCorrect) {
+            feedback.className = "feedback correct";
+            feedback.innerHTML = "<strong>¡CORRECTO! 🎉</strong><br>" + currentExplanation;
+            streak++;
+            score += 10 + (streak * 2);
+            document.querySelector('.mascot').innerHTML = "😎";
+            
+            // Si era del libro, avanzar índice
+            if (isBookExercise) {
+                bookIndex[currentMode]++;
+            }
+        } else {
+            feedback.className = "feedback wrong";
+            feedback.innerHTML = `<strong>¡Casi! 😅</strong><br>Solución: <strong>${currentSolution}</strong><br><hr>${currentExplanation}`;
+            streak = 0;
+            document.querySelector('.mascot').innerHTML = "🤔";
+        }
+        
+        document.getElementById('streak').innerText = streak;
+        document.getElementById('score').innerText = score;
+        feedback.style.display = 'block';
+        document.getElementById('nextBtn').style.display = 'inline-block';
+        document.getElementById('checkBtn').style.display = 'none';
+        document.getElementById('userAnswer').disabled = true;
+        
+        setTimeout(() => document.querySelector('.mascot').innerHTML = "👦🏽", 2000);
+    }
+    
+    document.getElementById("userAnswer").addEventListener("keyup", function(event) {
+        if (event.key === "Enter") {
+            if (document.getElementById('checkBtn').style.display !== 'none') checkAnswer();
+            else if (document.getElementById('nextBtn').style.display !== 'none') nextQuestion();
+        }
+    });
+
+</script>
+
+</body>
+</html>
